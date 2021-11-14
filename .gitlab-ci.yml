@@ -28,6 +28,7 @@ build:
             - build/tests/CTestTestfile.cmake
             - build/tests/reports
             - build/docs/*
+        expire_in: 2 days
 
 test:
     stage: artifacts
@@ -38,6 +39,7 @@ test:
         when: always
         reports:
             junit: ./build/tests/reports/*.xml
+        expire_in: 2 days
 
 pages:
     stage: artifacts
@@ -48,5 +50,6 @@ pages:
     artifacts:
         paths:
             - public/
+        expire_in: 2 days
     only:
         - trunk
