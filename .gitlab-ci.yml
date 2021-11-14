@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2021 metaquarx <metaquarx@protonmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+image: alpine
+
+stages:
+    - build
+    - artifacts
+
+before_script:
+    - apk update
+    - apk add make cmake clang binutils build-base git doxygen
+
+build:
+    stage: build
+    script:
+        - cmake -S . -B build -DSTITCH_BUILD_DOCS=ON -DSTITCH_BUILD_TESTS=ON
+        - cmake --build build
+    artifacts:
+        paths:
+            # - build/
+            - build/Makefile
+            - build/libStitch.a
+            - build/CMakeCache.txt
+            - build/tests/View
+            - build/tests/Scene
+            - build/tests/libidoctest.so
+            - build/tests/CTestTestfile.cmake
+            - build/tests/reports
+            - build/docs/*
+
+test:
+    stage: artifacts
+    needs: ['build']
+    script:
+        - ctest --test-dir build/tests
+    artifacts:
+        when: always
+        reports:
+            junit: ./build/tests/reports/*.xml
+
+pages:
+    stage: artifacts
+    needs: ['build']
+    script:
+        - cmake --build build -t doxygen
+        - mv build/docs/html public
+    artifacts:
+        paths:
+            - public/
+    only:
+        - trunk

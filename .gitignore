@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2021 metaquarx <metaquarx@protonmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+# Project files
+
+*.sublime-workspace
+*.sublime-project
+
+# Build files
+
+build/
