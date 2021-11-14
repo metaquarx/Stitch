@@ -127,7 +127,7 @@ public:
 	//////////////////// View access ////////////////////
 
 	/**
-	 * @brief      Construct an iterable SceneView based on the requested components.
+	 * @brief      Construct an iterable View based on the requested components.
 	 *
 	 * @tparam     Cs    Requested components.
 	 */
