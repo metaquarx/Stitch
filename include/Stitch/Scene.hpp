@@ -124,6 +124,21 @@ public:
 	template <typename C>
 	void clear();
 
+	/**
+	 * @brief      Reserve space inside a component pool;
+	 *
+	 * This may be useful to avoid reallocations, to avoid invalidating references.
+	 *
+	 * This function assures a minimum size of `amount`. If this is smaller than the
+	 * existing size, this function does nothing.
+	 *
+	 * @param[in]  amount  The minimum amount of components to store.
+	 *
+	 * @tparam     C       The components of which to reserve space for.
+	 */
+	template <typename C>
+	void reserve(std::size_t amount);
+
 	//////////////////// View access ////////////////////
 
 	/**

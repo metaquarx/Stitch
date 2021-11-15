@@ -68,6 +68,22 @@ void Scene::clear() {
 	pools.erase(std::type_index(typeid(C)));
 }
 
+template <typename C>
+void Scene::reserve(std::size_t amount) {
+	auto component_id = std::type_index(typeid(C));
+
+	// create pool if it doesnt exist
+	if (pools.find(component_id) == pools.end()) {
+		pools.emplace(std::piecewise_construct, std::forward_as_tuple(component_id),
+		  std::forward_as_tuple(
+			sizeof(C), [](const void *d) { static_cast<const C *>(d)->~C(); }));
+	}
+
+	auto &pool = pools.at(component_id);
+
+	pool.reserve(amount);
+}
+
 template <typename C, typename... Cs>
 View Scene::view() {
 	return View(*this, {std::type_index(typeid(C)), std::type_index(typeid(Cs))...});
