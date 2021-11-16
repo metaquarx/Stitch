@@ -17,6 +17,7 @@ View::View(Scene &scene_, const std::vector<std::type_index> &requested_)
 	for (auto it = requested.begin(); it != requested.end(); it++) {
 		if (scene.pools.find(*it) == scene.pools.end()) {
 			request_invalid = true;
+			return;
 		}
 	}
 

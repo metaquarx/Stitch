@@ -6,19 +6,22 @@
 #include "Stitch/Scene.hpp"
 
 struct ComponentOne {};
-
 struct ComponentTwo {};
-
 struct ComponentThree {};
 
 TEST_CASE("View") {
-	// Create registry with items
 	stch::Scene registry;
 
 	SUBCASE("No items when empty") {
 		auto view = registry.view<ComponentOne>();
 
 		REQUIRE(view.begin() == view.end());
+
+		SUBCASE("Multiple components") {
+			auto view2 = registry.view<ComponentOne, ComponentTwo>();
+
+			REQUIRE(view2.begin() == view2.end());
+		}
 	}
 
 	SUBCASE("Items when not empty") {
