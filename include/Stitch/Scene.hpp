@@ -189,8 +189,7 @@ private:
 	std::vector<unsigned char> ids;
 
 	// EntityID not in use, shortcut into `ids`
-	std::priority_queue<EntityID, std::vector<EntityID>, std::greater<EntityID>>
-	  reclaimable_ids;
+	std::priority_queue<EntityID, std::vector<EntityID>, std::greater<EntityID>> reclaimable_ids;
 
 	// ComponentID -> pool
 	std::unordered_map<std::type_index, ComponentPool> pools;
