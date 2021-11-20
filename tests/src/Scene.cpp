@@ -145,6 +145,26 @@ TEST_CASE("Scene") {
 		REQUIRE(counter == 200);
 	}
 
+	SUBCASE("Testing existance of different combinations of components") {
+		auto entity = registry.emplace();
+
+		class ComponentOne {};
+		class ComponentTwo {};
+
+		REQUIRE_FALSE(registry.all_of<ComponentOne, ComponentTwo>(entity));
+		REQUIRE_FALSE(registry.any_of<ComponentOne, ComponentTwo>(entity));
+
+		registry.emplace<ComponentOne>(entity);
+
+		REQUIRE_FALSE(registry.all_of<ComponentOne, ComponentTwo>(entity));
+		REQUIRE(registry.any_of<ComponentOne, ComponentTwo>(entity));
+
+		registry.emplace<ComponentTwo>(entity);
+
+		REQUIRE(registry.all_of<ComponentOne, ComponentTwo>(entity));
+		REQUIRE(registry.any_of<ComponentOne, ComponentTwo>(entity));
+	}
+
 	SUBCASE("Testing non existant IDs for existence") {
 		REQUIRE_FALSE(registry.exists(12089123));
 
