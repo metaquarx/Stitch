@@ -92,4 +92,7 @@ View Scene::view() {
 	return View(*this, {std::type_index(typeid(C)), std::type_index(typeid(Cs))...});
 }
 
+template <typename C>
+void Scene::sort(const std::function<bool(const C &, const C &)> &less_than) {}
+
 }  // namespace stch

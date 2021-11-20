@@ -6,6 +6,7 @@
 #include "Stitch/ComponentPool.hpp"
 #include "Stitch/View.hpp"
 
+#include <functional>
 #include <limits>
 #include <stdexcept>
 #include <typeindex>
@@ -151,7 +152,7 @@ public:
 	template <typename C>
 	void reserve(std::size_t amount);
 
-	//////////////////// View access ////////////////////
+	//////////////////// Iterable access ////////////////////
 
 	/**
 	 * @brief      Construct an iterable View based on the requested components.
@@ -160,6 +161,16 @@ public:
 	 */
 	template <typename C, typename... Cs>
 	View view();
+
+	/**
+	 * @brief      Sort a component pool using a custom comparator method
+	 *
+	 * @param[in]  less_than  User-defined comparator that returns if `left < right`.
+	 *
+	 * @tparam     C          Component to sort.
+	 */
+	template <typename C>
+	void sort(const std::function<bool(const C &, const C &)> &less_than);
 
 	friend class View;
 
