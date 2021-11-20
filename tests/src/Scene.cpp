@@ -49,11 +49,11 @@ TEST_CASE("Scene") {
 			data.set(counter);
 
 			REQUIRE(counter == 1);
-			REQUIRE(registry.exists<Data>(entity));
+			REQUIRE(registry.all_of<Data>(entity));
 
 			SUBCASE("Deleting a component") {
 				registry.erase<Data>(entity);
-				REQUIRE_FALSE(registry.exists<Data>(entity));
+				REQUIRE_FALSE(registry.all_of<Data>(entity));
 				REQUIRE(counter == 2);
 			}
 
@@ -70,7 +70,7 @@ TEST_CASE("Scene") {
 
 			SUBCASE("Deleting a component via clear") {
 				registry.clear<Data>();
-				REQUIRE_FALSE(registry.exists<Data>(entity));
+				REQUIRE_FALSE(registry.all_of<Data>(entity));
 			}
 
 			SUBCASE("Accessing a component via its reference") {
@@ -92,7 +92,7 @@ TEST_CASE("Scene") {
 				data2.set(counter);
 
 				REQUIRE(counter == 1);
-				REQUIRE(registry.exists<Data>(entity));
+				REQUIRE(registry.all_of<Data>(entity));
 			}
 
 			SUBCASE("Reusing an entity after it's been removed") {
@@ -107,14 +107,14 @@ TEST_CASE("Scene") {
 				data2.set(counter);
 
 				REQUIRE(counter == 1);
-				REQUIRE(registry.exists<Data>(entity));
+				REQUIRE(registry.all_of<Data>(entity));
 			}
 
 			SUBCASE("Repack doesn't impact anything") {
 				registry.repack();
 
 				REQUIRE(registry.exists(entity));
-				REQUIRE(registry.exists<Data>(entity));
+				REQUIRE(registry.all_of<Data>(entity));
 
 				auto &data2 = registry.get<Data>(entity);
 				data2.increment();
@@ -148,13 +148,13 @@ TEST_CASE("Scene") {
 	SUBCASE("Testing non existant IDs for existence") {
 		REQUIRE_FALSE(registry.exists(12089123));
 
-		REQUIRE_FALSE(registry.exists<int>(25935992));
+		REQUIRE_FALSE(registry.all_of<int>(25935992));
 
 		auto entity = registry.emplace();
-		REQUIRE_FALSE(registry.exists<Data>(entity));
+		REQUIRE_FALSE(registry.all_of<Data>(entity));
 
 		registry.emplace<int>(entity);
 
-		REQUIRE_FALSE(registry.exists<int>(1234));
+		REQUIRE_FALSE(registry.all_of<int>(1234));
 	}
 }
