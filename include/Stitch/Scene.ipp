@@ -48,11 +48,14 @@ void Scene::erase(EntityID id) {
 	erase(id, component_id);
 }
 
-template <typename C>
-bool Scene::exists(EntityID id) const {
-	auto component_id = std::type_index(typeid(C));
+template <typename... Cs>
+bool Scene::all_of(EntityID id) const {
+	return (... && exists(id, std::type_index(typeid(Cs))));
+}
 
-	return exists(id, component_id);
+template <typename... Cs>
+bool Scene::any_of(EntityID id) const {
+	return (... || exists(id, std::type_index(typeid(Cs))));
 }
 
 template <typename C>

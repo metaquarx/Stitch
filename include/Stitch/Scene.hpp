@@ -75,16 +75,28 @@ public:
 	void erase(EntityID id);
 
 	/**
-	 * @brief      Determines if an entity contains a component.
+	 * @brief      Determines if an entity contains certain components.
 	 *
 	 * @param[in]  id    The entity id.
 	 *
-	 * @tparam     C     The component to look for.
+	 * @tparam     Cs     The components to look for.
 	 *
-	 * @return     True if it exists, false if not.
+	 * @return     True if the entity contains all of the components listed.
 	 */
-	template <typename C>
-	bool exists(EntityID id) const;
+	template <typename... Cs>
+	bool all_of(EntityID id) const;
+
+	/**
+	 * @brief      Determines if an entity contains certain components.
+	 *
+	 * @param[in]  id    The entity id.
+	 *
+	 * @tparam     Cs    The components to look for.
+	 *
+	 * @return     True if the entity contains any of the components listed.
+	 */
+	template <typename... Cs>
+	bool any_of(EntityID id) const;
 
 	/**
 	 * @brief      Gets the component specified.
