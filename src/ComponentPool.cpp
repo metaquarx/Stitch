@@ -102,7 +102,7 @@ void ComponentPool::repack() {
 			  element_size);
 
 			sparse[i] = acc_i;
-			packed[acc_i] = i;
+			packed.push_back(i);
 
 			acc_i++;
 		}
