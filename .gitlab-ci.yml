@@ -24,6 +24,7 @@ build:
             - build/CMakeCache.txt
             - build/tests/View
             - build/tests/Scene
+            - build/tests/Sorting
             - build/tests/libidoctest.so
             - build/tests/CTestTestfile.cmake
             - build/tests/reports
