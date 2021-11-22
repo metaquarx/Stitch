@@ -92,7 +92,90 @@ View Scene::view() {
 	return View(*this, {std::type_index(typeid(C)), std::type_index(typeid(Cs))...});
 }
 
+// sorting
+
 template <typename C>
-void Scene::sort(const std::function<bool(const C &, const C &)> &less_than) {}
+C &get(unsigned index, ComponentPool &pool) {
+	return *static_cast<C *>(pool[index]);
+}
+
+template <typename C>
+void swap(unsigned lhs, unsigned rhs, ComponentPool &pool) {
+	auto lhs_entity = pool.packed[lhs];
+	auto rhs_entity = pool.packed[rhs];
+
+	pool.sparse[lhs_entity] = rhs;
+	pool.sparse[rhs_entity] = lhs;
+	pool.packed[lhs] = rhs_entity;
+	pool.packed[rhs] = lhs_entity;
+
+	C temp = std::move(get<C>(lhs, pool));
+
+	get<C>(lhs, pool) = std::move(get<C>(rhs, pool));
+	get<C>(rhs, pool) = std::move(temp);
+}
+
+template <typename C>
+void quicksort(unsigned first,
+  unsigned last,
+  const std::function<bool(const C &, const C &)> &less_than,
+  ComponentPool &pool) {
+	auto size = last - first;
+
+	// already sorted
+	if (size <= 1) {
+		return;
+	}
+
+	// middle pivot
+	auto pivot = last;
+	--pivot;
+	if (size > 2) {
+		auto middle = first;
+		middle += size / 2;
+		swap<C>(middle, pivot, pool);
+	}
+
+	// scan and swap
+	auto left = first;
+	auto right = pivot;
+	while (left != right) {
+		// look for mismatches
+		while (!less_than(get<C>(pivot, pool), get<C>(left, pool)) && left != right) {
+			++left;
+		}
+		while (!less_than(get<C>(right, pool), get<C>(pivot, pool)) && left != right) {
+			--right;
+		}
+
+		if (left != right) {
+			swap<C>(left, right, pool);
+		}
+	}
+
+	// move pivot back
+	if (pivot != left && less_than(get<C>(pivot, pool), get<C>(left, pool))) {
+		swap<C>(pivot, left, pool);
+	}
+
+	// subdivide
+	quicksort(first, left, less_than, pool);
+	quicksort(++left, last, less_than, pool);  // left is already sorted
+}
+
+template <typename C>
+void Scene::sort(const std::function<bool(const C &, const C &)> &less_than) {
+	// nothing to sort
+	if (pools.find(std::type_index(typeid(C))) == pools.end()) {
+		return;
+	}
+
+	auto &pool = pools.at(std::type_index(typeid(C)));
+
+	// repack to avoid having to check for num_max
+	pool.repack();
+
+	return quicksort(0, pools.at(std::type_index(typeid(C))).capacity(), less_than, pool);
+}
 
 }  // namespace stch

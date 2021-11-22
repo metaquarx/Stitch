@@ -49,3 +49,4 @@ endmacro()
 
 RegisterFile("Scene.cpp")
 RegisterFile("View.cpp")
+RegisterFile("Sorting.cpp")
