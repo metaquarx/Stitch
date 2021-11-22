@@ -73,8 +73,8 @@ const void *ComponentPool::operator[](std::size_t index) const {
 
 void ComponentPool::clear() {
 	sparse.clear();
-	reclaimable_packed = std::priority_queue<std::size_t, std::vector<std::size_t>,
-	  std::greater<std::size_t>>();
+	reclaimable_packed =
+	  std::priority_queue<std::size_t, std::vector<std::size_t>, std::greater<std::size_t>>();
 
 	for (std::size_t i = 0; i < packed.size(); i++) {
 		if (packed[i] != std::numeric_limits<EntityID>::max()) {
@@ -93,13 +93,12 @@ void ComponentPool::repack() {
 	void *acc = std::malloc(packed.size() * element_size);
 	std::size_t acc_i = 0;
 	packed.clear();
-	reclaimable_packed = std::priority_queue<std::size_t, std::vector<std::size_t>,
-	  std::greater<std::size_t>>();
+	reclaimable_packed =
+	  std::priority_queue<std::size_t, std::vector<std::size_t>, std::greater<std::size_t>>();
 
 	for (std::size_t i = 0; i < sparse.size(); i++) {
 		if (sparse[i] != std::numeric_limits<EntityID>::max()) {
-			std::memcpy(
-			  static_cast<char *>(acc) + (element_size * acc_i), operator[](sparse[i]),
+			std::memcpy(static_cast<char *>(acc) + (element_size * acc_i), operator[](sparse[i]),
 			  element_size);
 
 			sparse[i] = acc_i;
