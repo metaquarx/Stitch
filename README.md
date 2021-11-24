@@ -9,4 +9,4 @@ Stitch is bitset free - that means that you don't need to specify what component
 
 ## Docs
 
-Read the docs, including tutorials, examples & cmake integration, [here](https://metaquarx.gitlab.io/stitch_test)!
+Read the docs, including tutorials, examples & cmake integration, [here](https://metaquarx.gitlab.io/stitch)!
