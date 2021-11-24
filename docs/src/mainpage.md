@@ -102,7 +102,7 @@ If that is not suitable for your project, you can call cmake manually and then c
 
 To build the project,
 ```
-cmake -S . -B build
+cmake -S . -B build -DSTITCH_BUILD_DOCS=ON -DSTITHC_BUILD_TESTS=ON
 cmake --build build
 ```
 
