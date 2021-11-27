@@ -11,13 +11,17 @@ struct Data {
 	int *counter;
 
 	Data() {}
-	Data(int &watchdog) { set(watchdog); }
+	Data(int &watchdog) {
+		set(watchdog);
+	}
 
 	void set(int &watchdog) {
 		counter = &watchdog;
 		increment();
 	}
-	void increment() { (*counter)++; }
+	void increment() {
+		(*counter)++;
+	}
 
 	~Data() {
 		increment();
@@ -176,5 +180,15 @@ TEST_CASE("Scene") {
 		registry.emplace<int>(entity);
 
 		REQUIRE_FALSE(registry.all_of<int>(1234));
+	}
+
+	SUBCASE("Testing non trivially copyable objects") {
+		for (unsigned i = 0; i < 10; i++) {
+			auto entity = registry.emplace();
+			registry.emplace<std::string>(entity, "foobar");
+		}
+
+		// ostensibly this would just be undefined behaviour, but more likely
+		// double free would occur due to the realloc and memcpy
 	}
 }
