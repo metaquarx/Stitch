@@ -15,7 +15,11 @@ C &Scene::emplace(EntityID id, Ps... args) {
 	if (pools.find(component_id) == pools.end()) {
 		pools.emplace(std::piecewise_construct, std::forward_as_tuple(component_id),
 		  std::forward_as_tuple(
-			sizeof(C), [](const void *d) { static_cast<const C *>(d)->~C(); }));
+			sizeof(C),
+			[](const std::byte *d) { std::destroy_at(reinterpret_cast<const C *>(d)); },
+			[](std::byte *src, std::byte *dest) {
+				new (dest) C(std::move(*reinterpret_cast<C *>(src)));
+			}));
 	}
 
 	auto &pool = pools.at(component_id);
@@ -63,7 +67,7 @@ C &Scene::get(EntityID id) {
 	auto component_id = std::type_index(typeid(C));
 
 	auto &pool = pools.at(component_id);
-	return *static_cast<C *>(pool[pool.sparse[id]]);
+	return *reinterpret_cast<C *>(pool[pool.sparse[id]]);
 }
 
 template <typename C>
@@ -79,7 +83,11 @@ void Scene::reserve(std::size_t amount) {
 	if (pools.find(component_id) == pools.end()) {
 		pools.emplace(std::piecewise_construct, std::forward_as_tuple(component_id),
 		  std::forward_as_tuple(
-			sizeof(C), [](const void *d) { static_cast<const C *>(d)->~C(); }));
+			sizeof(C),
+			[](const std::byte *d) { std::destroy_at(reinterpret_cast<const C *>(d)); },
+			[](std::byte *src, std::byte *dest) {
+				new (dest) C(std::move(*reinterpret_cast<C *>(src)));
+			}));
 	}
 
 	auto &pool = pools.at(component_id);
@@ -96,7 +104,7 @@ View Scene::view() {
 
 template <typename C>
 C &get(unsigned index, ComponentPool &pool) {
-	return *static_cast<C *>(pool[index]);
+	return *reinterpret_cast<C *>(pool[index]);
 }
 
 template <typename C>

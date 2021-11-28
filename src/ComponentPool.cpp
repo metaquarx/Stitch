@@ -10,15 +10,17 @@
 
 namespace stch {
 
-ComponentPool::ComponentPool(std::size_t type_size, void (*destructor)(const void *))
-  : data(nullptr), dtor(destructor), element_size(type_size) {
+ComponentPool::ComponentPool(std::size_t type_size,
+  std::function<void(const std::byte *)> destructor,
+  std::function<void(std::byte *, std::byte *)> move)
+  : data(nullptr), dtor(destructor), umove(move), element_size(type_size) {
 	reserve(2);
 }
 
 ComponentPool::ComponentPool(ComponentPool &&other)
   : sparse(std::move(other.sparse)), packed(std::move(other.packed)),
 	reclaimable_packed(std::move(other.reclaimable_packed)), data(other.data),
-	dtor(other.dtor), element_size(other.element_size) {
+	dtor(other.dtor), umove(other.umove), element_size(other.element_size) {
 	other.data = nullptr;
 }
 
@@ -30,6 +32,7 @@ ComponentPool &ComponentPool::operator=(ComponentPool &&other) {
 	reclaimable_packed = std::move(other.reclaimable_packed);
 	data = other.data;
 	dtor = other.dtor;
+	umove = other.umove;
 	element_size = other.element_size;
 
 	other.data = nullptr;
@@ -40,7 +43,7 @@ ComponentPool &ComponentPool::operator=(ComponentPool &&other) {
 ComponentPool::~ComponentPool() {
 	clear();
 
-	std::free(data);
+	delete[] data;
 }
 
 std::size_t ComponentPool::size() const {
@@ -53,35 +56,49 @@ std::size_t ComponentPool::capacity() const {
 
 void ComponentPool::reserve(std::size_t new_size) {
 	if (new_size > capacity()) {
+		std::byte *temp = new std::byte[element_size * new_size];
+
 		for (std::size_t i = capacity(); i < new_size; i++) {
 			reclaimable_packed.push(i);
 		}
 
-		packed.resize(new_size, std::numeric_limits<EntityID>::max());
+		if (data == nullptr) {
+			data = temp;
+		} else {
+			// move from data to temp;
+			for (unsigned i = 0; i < packed.size(); i++) {
+				if (packed[i] != std::numeric_limits<EntityID>::max()) {
+					umove(operator[](i), temp + (i * element_size));
+					dtor(operator[](i));
+				}
+			}
 
-		data = std::realloc(data, new_size * element_size);
+			delete[] data;
+
+			data = temp;
+		}
+
+		packed.resize(new_size, std::numeric_limits<EntityID>::max());
 	}
 }
 
-void *ComponentPool::operator[](std::size_t index) {
-	return const_cast<void *>(std::as_const(*this)[index]);
+std::byte *ComponentPool::operator[](std::size_t index) {
+	return const_cast<std::byte *>(std::as_const(*this)[index]);
 }
 
-const void *ComponentPool::operator[](std::size_t index) const {
-	return static_cast<char *>(data) + (index * element_size);
+const std::byte *ComponentPool::operator[](std::size_t index) const {
+	return data + (index * element_size);
 }
 
 void ComponentPool::clear() {
 	sparse.clear();
-	reclaimable_packed =
-	  std::priority_queue<std::size_t, std::vector<std::size_t>, std::greater<std::size_t>>();
 
 	for (std::size_t i = 0; i < packed.size(); i++) {
 		if (packed[i] != std::numeric_limits<EntityID>::max()) {
 			dtor(operator[](i));
+		} else {
+			reclaimable_packed.push(i);
 		}
-
-		reclaimable_packed.push(i);
 	}
 }
 
@@ -90,29 +107,27 @@ void ComponentPool::repack() {
 		sparse.pop_back();
 	}
 
-	void *acc = std::malloc(packed.size() * element_size);
-	std::size_t acc_i = 0;
+	auto acc = new std::byte[element_size * size()];
 	packed.clear();
-	reclaimable_packed =
-	  std::priority_queue<std::size_t, std::vector<std::size_t>, std::greater<std::size_t>>();
+	reclaimable_packed = {};
 
-	for (std::size_t i = 0; i < sparse.size(); i++) {
-		if (sparse[i] != std::numeric_limits<EntityID>::max()) {
-			std::memcpy(static_cast<char *>(acc) + (element_size * acc_i), operator[](sparse[i]),
-			  element_size);
+	for (std::size_t i = 0, e = 0; e < sparse.size(); e++) {
+		if (sparse[e] != std::numeric_limits<EntityID>::max()) {
+			umove(operator[](sparse[e]), acc + (element_size * i));
+			dtor(operator[](sparse[e]));
 
-			sparse[i] = acc_i;
-			packed.push_back(i);
+			sparse[e] = i;
+			packed.push_back(e);
 
-			acc_i++;
+			i++;
 		}
 	}
 
-	std::free(data);
+	delete[] data;
 	data = acc;
 }
 
-void (*ComponentPool::get_dtor(void) const)(const void *) {
+std::function<void(const std::byte *)> ComponentPool::get_dtor() {
 	return dtor;
 }
 

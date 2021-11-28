@@ -14,18 +14,23 @@ struct Data {
 	Data(int &watchdog) {
 		set(watchdog);
 	}
+	Data(Data &&other) {
+		counter = other.counter;
+		other.counter = nullptr;
+	}
+	~Data() {
+		increment();
+		counter = nullptr;
+	}
 
 	void set(int &watchdog) {
 		counter = &watchdog;
 		increment();
 	}
 	void increment() {
-		(*counter)++;
-	}
-
-	~Data() {
-		increment();
-		counter = nullptr;
+		if (counter != nullptr) {
+			(*counter)++;
+		}
 	}
 };
 

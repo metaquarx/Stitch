@@ -5,6 +5,7 @@
 
 #include "Stitch/Entity.hpp"
 
+#include <functional>
 #include <queue>
 #include <vector>
 
@@ -20,9 +21,12 @@ public:
 	 * @brief      Constructs a new instance.
 	 *
 	 * @param[in]  type_size   Sizeof the type to be held
-	 * @param[in]  destructor  Pointer to type's destructor
+	 * @param[in]  destructor  Function that calls the type's destructor
+	 * @param[in]  move        Function that moves lhs to an uninitialised location at rhs
 	 */
-	ComponentPool(std::size_t type_size, void (*destructor)(const void *));
+	ComponentPool(std::size_t type_size,
+	  std::function<void(const std::byte *)> destructor,
+	  std::function<void(std::byte *, std::byte *)> move);
 
 	/**
 	 * @brief      Move constructor
@@ -81,7 +85,7 @@ public:
 	 *
 	 * @return     Pointer to the object requested.
 	 */
-	const void *operator[](std::size_t index) const;
+	const std::byte *operator[](std::size_t index) const;
 
 	/**
 	 * @brief      Same as above except non-const
@@ -90,7 +94,7 @@ public:
 	 *
 	 * @return     Pointer to the object requested.
 	 */
-	void *operator[](std::size_t index);
+	std::byte *operator[](std::size_t index);
 
 	//////////////////// Modifiers ////////////////////
 
@@ -113,7 +117,7 @@ public:
 	 *
 	 * @return     Pointer to destructor function.
 	 */
-	void (*get_dtor() const)(const void *);
+	std::function<void(const std::byte *)> get_dtor();
 
 	// EntityID -> internal
 	// num_max = not in use
@@ -126,16 +130,15 @@ public:
 
 	// index -> internal
 	// packed.size() - size is (size)
-	std::priority_queue<std::size_t, std::vector<std::size_t>, std::greater<std::size_t>>
-	  reclaimable_packed;
+	std::priority_queue<std::size_t, std::vector<std::size_t>, std::greater<std::size_t>> reclaimable_packed;
 
 private:
 	// internal * element_size -> T
 	// allocated size is the same as packed.size()
-	void *data;
+	std::byte *data;
 
-	// void(const void*) function pointer
-	void (*dtor)(const void *);
+	std::function<void(const std::byte *)> dtor;
+	std::function<void(std::byte *, std::byte *)> umove;
 	std::size_t element_size;
 
 	// non copyable

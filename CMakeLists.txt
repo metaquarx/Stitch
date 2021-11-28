@@ -4,7 +4,7 @@
 # Setup
 
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR) # CI uses `--test-dir`
-project(Stitch VERSION 0.2.1 LANGUAGES CXX)
+project(Stitch VERSION 0.3.0 LANGUAGES CXX)
 
 option(STITCH_BUILD_TESTS "Build Stitch tests" OFF)
 option(STITCH_BUILD_DOCS "Build Stitch docs" OFF)
