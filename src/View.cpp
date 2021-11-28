@@ -22,10 +22,9 @@ View::View(Scene &scene_, const std::vector<std::type_index> &requested_)
 	}
 
 	// sort by smallest pool size
-	std::sort(
-	  requested.begin(), requested.end(), [&](std::type_index lhs, std::type_index rhs) {
-		  return scene.pools.at(lhs).size() < scene.pools.at(rhs).size();
-	  });
+	std::sort(requested.begin(), requested.end(), [&](std::type_index lhs, std::type_index rhs) {
+		return scene.pools.at(lhs).size() < scene.pools.at(rhs).size();
+	});
 }
 
 View::Iterator View::begin() {
@@ -35,10 +34,7 @@ View::Iterator View::begin() {
 
 	unsigned index = 0;
 
-	while (index != scene.pools.at(requested.front()).packed.size() - 1
-		   && scene.pools.at(requested.front()).packed[index]
-				< std::numeric_limits<EntityID>::max()
-		   && !is_valid(index)) {
+	while (index != scene.pools.at(requested.front()).packed.size() && !is_valid(index)) {
 		index++;
 	}
 
@@ -50,8 +46,7 @@ View::Iterator View::end() {
 		return Iterator(*this, 0);
 	}
 
-	unsigned index =
-	  static_cast<unsigned>(scene.pools.at(requested.front()).packed.size());
+	unsigned index = static_cast<unsigned>(scene.pools.at(requested.front()).packed.size());
 
 	return Iterator(*this, index);
 }

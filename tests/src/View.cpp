@@ -93,4 +93,25 @@ TEST_CASE("View") {
 			REQUIRE(seen_entity_three == true);
 		}
 	}
+
+	SUBCASE("Items after removing") {
+		std::vector<stch::EntityID> contains;
+
+		// add
+		for (unsigned i = 0; i < 10; i++) {
+			auto entity = registry.emplace();
+			contains.push_back(entity);
+			registry.emplace<int>(entity);
+		}
+
+		// remove
+		for (auto entity : contains) {
+			registry.erase<int>(entity);
+		}
+
+		// check
+		for (auto entity : registry.view<int>()) {
+			REQUIRE(false);	 // there should be nothing here
+		}
+	}
 }
