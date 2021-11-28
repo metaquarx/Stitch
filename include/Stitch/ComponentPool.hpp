@@ -47,6 +47,10 @@ public:
 	 */
 	~ComponentPool();
 
+	// non copyable
+	ComponentPool(const ComponentPool &other) = delete;
+	ComponentPool &operator=(const ComponentPool &other) = delete;
+
 	//////////////////// Capacity ////////////////////
 
 	/**
@@ -140,10 +144,6 @@ private:
 	std::function<void(const std::byte *)> dtor;
 	std::function<void(std::byte *, std::byte *)> umove;
 	std::size_t element_size;
-
-	// non copyable
-	ComponentPool(const ComponentPool &other);
-	ComponentPool &operator=(const ComponentPool &other);
 };
 
 }  // namespace stch
