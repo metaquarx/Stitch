@@ -8,6 +8,7 @@ project(Stitch VERSION 0.3.1 LANGUAGES CXX)
 
 option(STITCH_BUILD_TESTS "Build Stitch tests" OFF)
 option(STITCH_BUILD_DOCS "Build Stitch docs" OFF)
+option(STITCH_BUILD_COVERAGE "Build library and tests with code coverage flags (assumes gcc)" OFF)
 
 # Build types
 
@@ -37,6 +38,11 @@ set_target_properties(Stitch PROPERTIES
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
 )
+
+if (STITCH_BUILD_COVERAGE)
+	target_compile_options(Stitch PUBLIC --coverage)
+	target_link_options(Stitch PUBLIC --coverage)
+endif()
 
 # Docs
 

@@ -9,37 +9,26 @@ stages:
 
 before_script:
     - apk update
-    - apk add make cmake clang binutils build-base git doxygen
+    - apk add make cmake g++ binutils build-base git doxygen gcovr
 
 build:
     stage: build
     script:
-        - cmake -S . -B build -DSTITCH_BUILD_DOCS=ON -DSTITCH_BUILD_TESTS=ON
+        - cmake -S . -B build -DSTITCH_BUILD_DOCS=ON -DSTITCH_BUILD_TESTS=ON -DSTITCH_BUILD_COVERAGE=ON
         - cmake --build build
-    artifacts:
-        paths:
-            # - build/
-            - build/Makefile
-            - build/libStitch.a
-            - build/CMakeCache.txt
-            - build/tests/View
-            - build/tests/Scene
-            - build/tests/Sorting
-            - build/tests/libidoctest.so
-            - build/tests/CTestTestfile.cmake
-            - build/tests/reports
-            - build/docs/*
-        expire_in: 2 days
-
-test:
-    stage: artifacts
-    needs: ['build']
-    script:
         - ctest --test-dir build/tests
+        - gcovr --xml-pretty --exclude-unreachable-branches --print-summary -o build/tests/reports/coverage.xml --root .
+    coverage: /^\s*lines:\s*\d+.\d+\%/
     artifacts:
         when: always
+        name: ${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
         reports:
             junit: ./build/tests/reports/*.xml
+            cobertura: build/tests/reports/coverage.xml
+        paths:
+            - build/docs/*
+            - build/CMakeCache.txt
+            - build/Makefile
         expire_in: 2 days
 
 pages:
