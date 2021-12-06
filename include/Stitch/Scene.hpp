@@ -113,6 +113,18 @@ public:
 	template <typename C>
 	C &get(EntityID id);
 
+	/**
+	 * @brief      Gets the specified components
+	 *
+	 * @param[in]  id    The entity id.
+	 *
+	 * @tparam     Cs    Components to get.
+	 *
+	 * @return     A tuple containing the requested components.
+	 */
+	template <typename C1, typename C2, typename... Cs>
+	std::tuple<C1 &, C2 &, Cs &...> get(EntityID id);
+
 	//////////////////// Modifiers ////////////////////
 
 	/**
