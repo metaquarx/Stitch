@@ -197,4 +197,19 @@ TEST_CASE("Scene") {
 		// ostensibly this would just be undefined behaviour, but more likely
 		// double free would occur due to the realloc and memcpy
 	}
+
+	SUBCASE("Get<> with multiple components") {
+		auto entity = registry.emplace();
+
+		registry.emplace<int>(entity);
+		registry.emplace<float>(entity);
+
+		auto [foo, bar] = registry.get<int, float>(entity);
+
+		foo = 123;
+		bar = 1.23f;
+
+		REQUIRE(foo == 123);
+		REQUIRE(registry.get<float>(entity) == 1.23f);
+	}
 }
