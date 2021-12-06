@@ -10,7 +10,8 @@
 #include <random>
 
 struct Component {
-	Component(float value_) : value(value_) {}
+	Component(float value_) : value(value_) {
+	}
 	float value;
 };
 
@@ -41,13 +42,12 @@ TEST_CASE("Sorting") {
 
 			previous = registry.get<Component>(entity).value;
 		}
-		std::cout << "----" << std::endl;
 		REQUIRE_FALSE(sorted);
 	}
 
 	SUBCASE("Check if sorting works") {
 		registry.sort<Component>(
-		  [](const auto &lhs, const auto &rhs) { return lhs.value < rhs.value; });
+			[](const auto &lhs, const auto &rhs) { return lhs.value < rhs.value; });
 
 		bool sorted = true;
 		float previous = std::numeric_limits<float>::min();
@@ -58,7 +58,6 @@ TEST_CASE("Sorting") {
 			}
 			previous = registry.get<Component>(entity).value;
 		}
-		std::cout << "----" << std::endl;
 		REQUIRE(sorted);
 	}
 }
