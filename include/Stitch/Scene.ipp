@@ -70,6 +70,11 @@ C &Scene::get(EntityID id) {
 	return *reinterpret_cast<C *>(pool[pool.sparse[id]]);
 }
 
+template <typename C1, typename C2, typename... Cs>
+std::tuple<C1 &, C2 &, Cs &...> Scene::get(EntityID id) {
+	return std::tie(get<C1>(id), get<C2>(id), get<Cs>(id)...);
+}
+
 template <typename C>
 void Scene::clear() {
 	pools.erase(std::type_index(typeid(C)));
