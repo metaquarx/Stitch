@@ -100,9 +100,9 @@ void Scene::reserve(std::size_t amount) {
 	pool.reserve(amount);
 }
 
-template <typename C, typename... Cs>
+template <typename... Cs>
 View Scene::view() {
-	return View(*this, {std::type_index(typeid(C)), std::type_index(typeid(Cs))...});
+	return View(*this, {std::type_index(typeid(Cs))...});
 }
 
 // sorting

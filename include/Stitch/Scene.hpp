@@ -171,7 +171,7 @@ public:
 	 *
 	 * @tparam     Cs    Requested components.
 	 */
-	template <typename C, typename... Cs>
+	template <typename... Cs>
 	View view();
 
 	/**
