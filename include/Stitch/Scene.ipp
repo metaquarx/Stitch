@@ -14,12 +14,12 @@ C &Scene::emplace(EntityID id, Ps... args) {
 	// create pool if it doesnt exist
 	if (pools.find(component_id) == pools.end()) {
 		pools.emplace(std::piecewise_construct, std::forward_as_tuple(component_id),
-		  std::forward_as_tuple(
-			sizeof(C),
-			[](const std::byte *d) { std::destroy_at(reinterpret_cast<const C *>(d)); },
-			[](std::byte *src, std::byte *dest) {
-				new (dest) C(std::move(*reinterpret_cast<C *>(src)));
-			}));
+					  std::forward_as_tuple(
+						  sizeof(C),
+						  [](const std::byte *d) { std::destroy_at(reinterpret_cast<const C *>(d)); },
+						  [](std::byte *src, std::byte *dest) {
+							  new (dest) C(std::move(*reinterpret_cast<C *>(src)));
+						  }));
 	}
 
 	auto &pool = pools.at(component_id);
@@ -82,12 +82,12 @@ void Scene::reserve(std::size_t amount) {
 	// create pool if it doesnt exist
 	if (pools.find(component_id) == pools.end()) {
 		pools.emplace(std::piecewise_construct, std::forward_as_tuple(component_id),
-		  std::forward_as_tuple(
-			sizeof(C),
-			[](const std::byte *d) { std::destroy_at(reinterpret_cast<const C *>(d)); },
-			[](std::byte *src, std::byte *dest) {
-				new (dest) C(std::move(*reinterpret_cast<C *>(src)));
-			}));
+					  std::forward_as_tuple(
+						  sizeof(C),
+						  [](const std::byte *d) { std::destroy_at(reinterpret_cast<const C *>(d)); },
+						  [](std::byte *src, std::byte *dest) {
+							  new (dest) C(std::move(*reinterpret_cast<C *>(src)));
+						  }));
 	}
 
 	auto &pool = pools.at(component_id);
@@ -124,10 +124,8 @@ void swap(unsigned lhs, unsigned rhs, ComponentPool &pool) {
 }
 
 template <typename C>
-void quicksort(unsigned first,
-  unsigned last,
-  const std::function<bool(const C &, const C &)> &less_than,
-  ComponentPool &pool) {
+void quicksort(unsigned first, unsigned last,
+			   const std::function<bool(const C &, const C &)> &less_than, ComponentPool &pool) {
 	auto size = last - first;
 
 	// already sorted
