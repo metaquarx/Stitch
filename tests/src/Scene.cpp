@@ -10,7 +10,8 @@
 struct Data {
 	int *counter;
 
-	Data() {}
+	Data() {
+	}
 	Data(int &watchdog) {
 		set(watchdog);
 	}
