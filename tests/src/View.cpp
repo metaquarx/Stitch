@@ -121,14 +121,16 @@ TEST_CASE("View") {
 		}
 	}
 
-	SUBCASE("Iterate with a callback") {
+	SUBCASE("Iterate with a callback with multiple components") {
 		auto entity1 = registry.emplace();
 		registry.emplace<int>(entity1, 1);
+		registry.emplace<std::string>(entity1, "1");
 		auto entity2 = registry.emplace();
 		registry.emplace<int>(entity2, 2);
+		registry.emplace<std::string>(entity2, "2");
 
-		registry.each<int>([](auto, auto &integer) {
-			bool result = integer == 1 || integer == 2;
+		registry.each<int, std::string>([](auto, auto &integer, auto &string) {
+			bool result = (integer == 1 && string == "1") || (integer == 2 && string == "2");
 			REQUIRE(result);
 		});
 	}

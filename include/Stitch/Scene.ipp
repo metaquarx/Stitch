@@ -110,7 +110,7 @@ void Scene::each(const id_t<std::function<void(EntityID, Cs &...)>> &callback) {
 	auto window = view<Cs...>();
 
 	for (auto id : window) {
-		callback(id, get<Cs...>(id));
+		callback(id, get<Cs>(id)...);
 	}
 }
 
