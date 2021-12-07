@@ -12,70 +12,15 @@ Stitch is bitset free - that means that you don't need to specify what component
 ## Table of Contents
 
 - [Usage](#usage)
+- [Class reference](annotated.html)
 - [CMake integration](#cmake)
 - [Building manually](#building)
-- [Class references](annotated.html)
 
 ---
 
 ## Usage {#usage}
 
-In most cases you'll only need to include the `Scene` header file.
-
-```cpp
-#include "Stitch/Scene.hpp"
-```
-
-### Handling entities
-
-```cpp
-stch::Scene registry;
-
-auto entity = registry.emplace(); // create a new entity, with no components, and store its identifier
-
-registry.erase(entity); // destroy the entity and any components it may have
-
-assert(registry.exists(entity) == false);
-```
-
-### Handling components
-
-```cpp
-auto entity = registry.emplace();
-
-struct Position {
-	float x, y, z;
-};
-
-registry.emplace<Position>(entity); // Add the position component to our entity
-registry.erase<Position>(entity); // Remove the previously added component
-
-assert(registry.exists(entity));
-
-registry.emplace<Position>(entity, Position{0.f, 1.f, 0.f}); // Optionally pass parameters to the underlying component constructor
-
-
-auto& position = registry.get<Position>(entity); // Get a reference to the underlying component
-assert(position.y == 1.f);
-
-// Everything gets safely destructed at end of scope
-```
-
-### Views
-
-Views are used by your systems to iterate over sets of components.
-
-```cpp
-void Physics::ForceSystem(float dt) {
-	for (auto entity: registry.view<Position, Velocity>()) {
-
-		registry.get<Position>(entity) += registry.get<Velocity>(entity);
-
-	}
-}
-```
-
----
+You can get started using Stitch by reading the Scene manual [here](classstch_1_1Scene.html#details).
 
 ## CMake integration {#cmake}
 
