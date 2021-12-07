@@ -15,6 +15,19 @@
 namespace stch {
 
 /**
+ * @brief      Implementation of std::type_identity, as we are using C++17, hence not available
+ *
+ * @tparam     T     type
+ */
+template <class T>
+struct id {
+	using type = T;
+};
+
+template <class T>
+using id_t = typename id<T>::type;
+
+/**
  * @brief      An ECS scene that holds all of the entities and their components.
  */
 class Scene {
