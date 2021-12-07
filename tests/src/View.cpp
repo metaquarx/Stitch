@@ -120,4 +120,16 @@ TEST_CASE("View") {
 			REQUIRE(false);	 // there should be nothing here
 		}
 	}
+
+	SUBCASE("Iterate with a callback") {
+		auto entity1 = registry.emplace();
+		registry.emplace<int>(entity1, 1);
+		auto entity2 = registry.emplace();
+		registry.emplace<int>(entity2, 2);
+
+		registry.each<int>([](auto, auto &integer) {
+			bool result = integer == 1 || integer == 2;
+			REQUIRE(result);
+		});
+	}
 }
