@@ -58,9 +58,12 @@ TEST_CASE("View") {
 			bool seen_entity_three = false;
 
 			for (auto entity : registry.view<ComponentTwo>()) {
-				if (entity == entity_one) seen_entity_one = true;
-				if (entity == entity_two) seen_entity_two = true;
-				if (entity == entity_three) seen_entity_three = true;
+				if (entity == entity_one)
+					seen_entity_one = true;
+				if (entity == entity_two)
+					seen_entity_two = true;
+				if (entity == entity_three)
+					seen_entity_three = true;
 			}
 
 			REQUIRE(seen_entity_one == false);
@@ -83,9 +86,12 @@ TEST_CASE("View") {
 			bool seen_entity_three = false;
 
 			for (auto entity : registry.view<ComponentThree, ComponentTwo>()) {
-				if (entity == entity_one) seen_entity_one = true;
-				if (entity == entity_two) seen_entity_two = true;
-				if (entity == entity_three) seen_entity_three = true;
+				if (entity == entity_one)
+					seen_entity_one = true;
+				if (entity == entity_two)
+					seen_entity_two = true;
+				if (entity == entity_three)
+					seen_entity_three = true;
 			}
 
 			REQUIRE(seen_entity_one == true);
