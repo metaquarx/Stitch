@@ -175,6 +175,16 @@ public:
 	View view();
 
 	/**
+	 * @brief      Abstraction over the view function, that lets you iterate using a callback.
+	 *
+	 * @param[in]  callback  The callback function.
+	 *
+	 * @tparam     Cs        Requested components.
+	 */
+	template <typename... Cs>
+	void each(const id_t<std::function<void(EntityID, Cs &...)>> &callback);
+
+	/**
 	 * @brief      Sort a component pool using a custom comparator method
 	 *
 	 * @param[in]  less_than  User-defined comparator that returns if `left < right`.
