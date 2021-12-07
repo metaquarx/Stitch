@@ -105,7 +105,18 @@ View Scene::view() {
 	return View(*this, {std::type_index(typeid(Cs))...});
 }
 
+template <typename... Cs>
+void Scene::each(const id_t<std::function<void(EntityID, Cs &...)>> &callback) {
+	auto window = view<Cs...>();
+
+	for (auto id : window) {
+		callback(id, get<Cs...>(id));
+	}
+}
+
 // sorting
+
+namespace priv {
 
 template <typename C>
 C &get(unsigned index, ComponentPool &pool) {
@@ -174,6 +185,8 @@ void quicksort(unsigned first, unsigned last,
 	quicksort(++left, last, less_than, pool);  // left is already sorted
 }
 
+}  // namespace priv
+
 template <typename C>
 void Scene::sort(const std::function<bool(const C &, const C &)> &less_than) {
 	// nothing to sort
@@ -186,7 +199,7 @@ void Scene::sort(const std::function<bool(const C &, const C &)> &less_than) {
 	// repack to avoid having to check for num_max
 	pool.repack();
 
-	return quicksort(0, pools.at(std::type_index(typeid(C))).capacity(), less_than, pool);
+	return priv::quicksort(0, pool.capacity(), less_than, pool);
 }
 
 }  // namespace stch
