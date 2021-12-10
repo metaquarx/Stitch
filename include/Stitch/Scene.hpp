@@ -33,6 +33,21 @@ using id_t = typename id<T>::type;
  */
 class Scene {
 public:
+	//////////////////// Prototypes ////////////////////
+
+	/**
+	 * @brief      Generates a prototype
+	 *
+	 * @param[in]  callback  Callback that gets called whenever the prototype is instantiated, with
+	 * references to each member.
+	 *
+	 * @tparam     Cs        Components to automatically add
+	 *
+	 * @return     An ID unique to the prototype, that you can then use to instantiate it.
+	 */
+	template <typename... Cs>
+	unsigned long prototype(id_t<std::function<void(EntityID, Cs &...)>> callback);
+
 	//////////////////// Entities ////////////////////
 
 	/**
@@ -43,6 +58,30 @@ public:
 	 * @return     The new entity's id.
 	 */
 	EntityID emplace();
+
+	/**
+	 * @brief      Create a new entity from a prototype.
+	 *
+	 * Creates a new entity, which automatically gets assigned all of the components that are in
+	 * it's prototype.
+	 *
+	 * @code
+	 * auto prototype = registry.prototype<int, float>([](auto id, auto &i, auto &f) {
+	 *     i = 0;
+	 *     f = 1.f;
+	 * });
+	 *
+	 * // ...
+	 *
+	 * auto entity = emplace_prototype(prototype);
+	 * @endcode
+	 *
+	 * @param[in]  prototype_id  The ID to the prototype you wish to instantiate, returned by @ref
+	 * prototype.
+	 *
+	 * @return     The new entity's id.
+	 */
+	EntityID emplace_prototype(unsigned long prototype_id);
 
 	/**
 	 * @brief      Erase an entity and its components.
@@ -304,6 +343,8 @@ private:
 
 	// ComponentID -> pool
 	std::unordered_map<std::type_index, ComponentPool> pools;
+
+	std::vector<std::function<EntityID()>> prototypes;
 };
 
 }  // namespace stch

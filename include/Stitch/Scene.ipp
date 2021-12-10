@@ -7,6 +7,21 @@
 
 namespace stch {
 
+template <typename... Cs>
+unsigned long Scene::prototype(id_t<std::function<void(EntityID, Cs &...)>> callback) {
+	prototypes.push_back([this, &callback]() {
+		auto entity = emplace();
+
+		(emplace<Cs>(entity), ...);
+
+		callback(entity, get<Cs>(entity)...);
+
+		return entity;
+	});
+
+	return prototypes.size() - 1;
+}
+
 template <typename C, typename... Ps>
 C &Scene::emplace(EntityID id, Ps... args) {
 	auto component_id = std::type_index(typeid(C));

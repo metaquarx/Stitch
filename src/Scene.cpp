@@ -21,6 +21,10 @@ EntityID Scene::emplace() {
 	return out;
 }
 
+EntityID Scene::emplace_prototype(unsigned long prototype_id) {
+	return prototypes[prototype_id]();
+}
+
 void Scene::erase(EntityID id) {
 	for (auto &pool : pools) {
 		if (exists(id, pool.first)) {

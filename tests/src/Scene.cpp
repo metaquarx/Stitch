@@ -212,4 +212,17 @@ TEST_CASE("Scene") {
 		REQUIRE(foo == 123);
 		REQUIRE(registry.get<float>(entity) == 1.23f);
 	}
+
+	SUBCASE("Prototypes") {
+		auto prototype = registry.prototype<int, float>([](auto id, auto &i, auto &f) {
+			i = id;
+			f = 1.234f;
+		});
+
+		auto entity = registry.emplace_prototype(prototype);
+		auto [i, f] = registry.get<int, float>(entity);
+
+		REQUIRE(i == entity);
+		REQUIRE(f == 1.234f);
+	}
 }
