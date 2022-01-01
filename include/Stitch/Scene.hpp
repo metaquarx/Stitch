@@ -434,10 +434,11 @@ private:
  * };
  *
  * for (auto entity : registry.view<Position, Velocity>()) {
- *     assert(registry.all_of<Position, Velocity>(entity));
+ *     registry.get<Position>(entity) += registry.get<Velocity>(entity);
  * }
  *
- * registry.each<Position, Velocity>([](auto id, auto &position, auto &velocity) {
+ * registry.each<Position, Velocity>(stch::exclude<DisablePhysics>(),
+ *                                   [](auto id, auto &position, auto &velocity) {
  *     position += velocity;
  * });
  *
