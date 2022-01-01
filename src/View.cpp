@@ -9,8 +9,9 @@
 
 namespace stch {
 
-View::View(Scene &scene_, const std::vector<std::type_index> &requested_)
-  : scene(scene_), requested(requested_), request_invalid(false) {
+View::View(Scene &scene_, const std::vector<std::type_index> &requested_,
+		   const std::vector<std::type_index> &excluded_)
+: scene(scene_), requested(requested_), excluded(excluded_), request_invalid(false) {
 	assert(requested.size() > 0);
 
 	// check if request is valid
@@ -52,8 +53,16 @@ View::Iterator View::end() {
 }
 
 bool View::is_valid(unsigned index) {
+	auto id = scene.pools.at(requested.front()).packed.at(index);
+
 	for (auto request : requested) {
-		if (!scene.exists(scene.pools.at(requested.front()).packed.at(index), request)) {
+		if (!scene.exists(id, request)) {
+			return false;
+		}
+	}
+
+	for (auto exclude : excluded) {
+		if (scene.exists(id, exclude)) {
 			return false;
 		}
 	}
@@ -61,8 +70,8 @@ bool View::is_valid(unsigned index) {
 	return true;
 }
 
-View::Iterator::Iterator(View &parent_, unsigned index_)
-  : parent(parent_), index(index_) {}
+View::Iterator::Iterator(View &parent_, unsigned index_) : parent(parent_), index(index_) {
+}
 
 EntityID View::Iterator::operator*() {
 	return parent.scene.pools.at(parent.requested.front()).packed[index];
@@ -79,8 +88,7 @@ bool View::Iterator::operator!=(const Iterator &rhs) const {
 View::Iterator &View::Iterator::operator++() {
 	do {
 		index++;
-	} while (index < parent.scene.pools.at(parent.requested.front()).packed.size()
-			 && !parent.is_valid(index));
+	} while (index < parent.scene.pools.at(parent.requested.front()).packed.size() && !parent.is_valid(index));
 
 	return *this;
 }

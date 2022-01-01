@@ -7,6 +7,11 @@
 
 namespace stch {
 
+template <typename... Ts>
+std::vector<std::type_index> exclude() {
+	return {typeid(Ts)...};
+}
+
 template <typename... Cs>
 unsigned long Scene::prototype(id_t<std::function<void(EntityID, Cs &...)>> callback) {
 	prototypes.push_back([this, &callback]() {
@@ -116,13 +121,19 @@ void Scene::reserve(std::size_t amount) {
 }
 
 template <typename... Cs>
-View Scene::view() {
-	return View(*this, {std::type_index(typeid(Cs))...});
+View Scene::view(std::vector<std::type_index> exclusions) {
+	return View(*this, {std::type_index(typeid(Cs))...}, exclusions);
 }
 
 template <typename... Cs>
 void Scene::each(const id_t<std::function<void(EntityID, Cs &...)>> &callback) {
-	auto window = view<Cs...>();
+	each<Cs...>({}, callback);
+}
+
+template <typename... Cs>
+void Scene::each(std::vector<std::type_index> exclusions,
+				 const id_t<std::function<void(EntityID, Cs &...)>> &callback) {
+	auto window = view<Cs...>(exclusions);
 
 	for (auto id : window) {
 		callback(id, get<Cs>(id)...);

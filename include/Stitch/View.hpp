@@ -17,7 +17,8 @@ class Scene;
  */
 class View {
 public:
-	View(Scene &scene, const std::vector<std::type_index> &requested = {});
+	View(Scene &scene, const std::vector<std::type_index> &requested = {},
+		 const std::vector<std::type_index> &excluded = {});
 
 	/**
 	 * @brief      An iterator into a view
@@ -66,6 +67,7 @@ public:
 private:
 	Scene &scene;
 	std::vector<std::type_index> requested;
+	std::vector<std::type_index> excluded;
 	bool request_invalid;
 
 	bool is_valid(unsigned index);

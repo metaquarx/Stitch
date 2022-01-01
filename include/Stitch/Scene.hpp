@@ -29,6 +29,18 @@ template <class T>
 using id_t = typename id<T>::type;
 
 /**
+ * @relates Scene
+ * @brief      Generate a vector of component types that should be excluded
+ *
+ * @tparam     Ts    Types to exclude
+ *
+ * @return     The result of this function can be passed as a parameter to @ref View or @ref each,
+ *             to exclude certain components from being iterated
+ */
+template <typename... Ts>
+std::vector<std::type_index> exclude();
+
+/**
  * @brief      An ECS scene that holds all of the entities and their components.
  */
 class Scene {
@@ -281,10 +293,12 @@ public:
 	 *
 	 * For most use cases, the @ref each method may be much more useful.
 	 *
-	 * @tparam     Cs    Requested components.
+	 * @param[in]  exclusions  Component to explicitly exclude while iterating, if any.
+	 *
+	 * @tparam     Cs          Requested components.
 	 */
 	template <typename... Cs>
-	View view();
+	View view(std::vector<std::type_index> exclusions = {});
 
 	/**
 	 * @brief      Abstraction over the view function, that lets you iterate using a callback.
@@ -305,6 +319,25 @@ public:
 	 */
 	template <typename... Cs>
 	void each(const id_t<std::function<void(EntityID, Cs &...)>> &callback);
+
+	/**
+	 * @brief      Overload of each function, that lets you exclude certain components.
+	 *
+	 * @code
+	 * registry.each<Position, Velocity>(stch::exclude<DisablePhysics>(),
+	 *                                   [](auto id, auto &pos, auto &vel) {
+	 *     pos += vel;
+	 * });
+	 * @endcode
+	 *
+	 * @param[in]  exclusions  The exclusions
+	 * @param[in]  callback    The callback
+	 *
+	 * @tparam     Cs          Requested components
+	 */
+	template <typename... Cs>
+	void each(std::vector<std::type_index> exclusions,
+			  const id_t<std::function<void(EntityID, Cs &...)>> &callback);
 
 	/**
 	 * @brief      Sort a component pool using a custom comparator method.

@@ -134,4 +134,17 @@ TEST_CASE("View") {
 			REQUIRE(result);
 		});
 	}
+
+	SUBCASE("Callback iteration with exclusion") {
+		auto entity1 = registry.emplace();
+		registry.emplace<int>(entity1, 1);
+		auto entity2 = registry.emplace();
+		registry.emplace<int>(entity2);
+		registry.emplace<float>(entity2);
+
+		registry.each<int>(stch::exclude<float>(), [&](auto id, auto &integer) {
+			REQUIRE(id == entity1);
+			REQUIRE(integer == 1);
+		});
+	}
 }
