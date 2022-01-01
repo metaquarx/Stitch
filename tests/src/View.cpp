@@ -121,7 +121,7 @@ TEST_CASE("View") {
 		}
 	}
 
-	SUBCASE("Iterate with a callback with multiple components") {
+	SUBCASE("Callback iteration with multiple components") {
 		auto entity1 = registry.emplace();
 		registry.emplace<int>(entity1, 1);
 		registry.emplace<std::string>(entity1, "1");
