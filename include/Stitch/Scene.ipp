@@ -8,7 +8,7 @@
 #include "Stitch/Record.hpp"
 
 #include <bits/utility.h>
-#include <iostream>
+#include <cassert>
 
 namespace stch {
 
@@ -65,7 +65,7 @@ C &Scene::emplace(EntityID id, Ps... args) {
 
 	arch::Record *end = nullptr;
 	for (auto &[eid, record] : m_entities) {
-		if (record.m_location == &target_location && record.m_row + 1 == target_location.m_storage.m_size) {
+		if (record.m_location == &target_location && record.m_row + 1 == current.m_location->m_storage.m_size) {
 			end = &record;
 		}
 	}
@@ -74,7 +74,7 @@ C &Scene::emplace(EntityID id, Ps... args) {
 		current.m_row,
 		m_shorthand,
 		std::nullopt,
-		*end
+		end
 	);
 
 	current = arch::Record(target_location, row);
@@ -134,7 +134,7 @@ void Scene::erase(EntityID id) {
 		current.m_row,
 		m_shorthand,
 		target_type,
-		*end
+		end
 	);
 
 	current = arch::Record(target_location, row);
@@ -191,7 +191,7 @@ C * Scene::get(EntityID id) {
 
 template <typename C1, typename C2, typename... Cs>
 std::optional<std::tuple<C1 &, C2 &, Cs &...>> Scene::get(EntityID id) {
-	auto results = std::forward_as_tuple(get<C1>(id), get<C2>(id), get<Cs>(id)...);
+	std::tuple<C1 *, C2 *, Cs *...> results = std::make_tuple(get<C1>(id), get<C2>(id), get<Cs>(id)...);
 
 	if (std::apply([](auto &&... i) { return (i && ...); }, results)) {
         return std::apply([](auto &&... i) {

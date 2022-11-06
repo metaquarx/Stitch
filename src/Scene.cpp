@@ -4,6 +4,7 @@
 #include "Stitch/Scene.hpp"
 
 #include <limits>
+#include <cassert>
 
 namespace stch {
 
@@ -26,6 +27,7 @@ EntityID Scene::emplace() {
 
 	// add to empty archetype
 	m_entities.emplace(id, arch::Record{m_containers.at(arch::ID{{}}), 0});
+	m_containers.at(arch::ID{{}}).m_storage.m_size++;
 
 	return id;
 }
@@ -35,11 +37,12 @@ void Scene::erase(EntityID id) {
 	auto &record = m_entities.at(id);
 	arch::Record *end = nullptr;
 	for (auto &[eid, record_] : m_entities) {
-		if (record_.m_location == record.m_location && record.m_row + 1 == record.m_location->m_storage.m_size) {
+		if (record_.m_location == record.m_location && record_.m_row + 1 == record.m_location->m_storage.m_size) {
 			end = &record_;
 		}
 	}
-	record.m_location->erase(record.m_row, *end);
+	assert(end);
+	record.m_location->erase(record.m_row, end);
 	m_entities.erase(id);
 
 	// recycle id

@@ -14,7 +14,7 @@ Container::Container()
 Container::Container(const Kind & kind)
 : m_id(kind)
 , m_types(kind)
-, m_storage{0, 0} {
+, m_storage{5, 0} {
 }
 
 Container::Container(Container && other)
@@ -29,7 +29,7 @@ Container::Container(Container && other)
 	}
 }
 
-void Container::erase(std::size_t row, Record & end) {
+void Container::erase(std::size_t row, Record * end) {
 	for (auto &pool : m_components) {
 		pool.erase(row);
 	}
@@ -37,9 +37,10 @@ void Container::erase(std::size_t row, Record & end) {
 	if (m_storage.m_size > row + 1) { // swapped
 
 		// update record of row `storage.size` to `row`
-		assert(end.m_location == this);
-		assert(end.m_row == m_storage.m_size);
-		end.m_row = row;
+		assert(end);
+		assert(end->m_location == this);
+		assert(end->m_row == m_storage.m_size);
+		end->m_row = row;
 	}
 	m_storage.m_size--;
 
@@ -50,7 +51,7 @@ std::pair<std::size_t, std::byte *> Container::steal(
 	std::size_t row,
 	const std::unordered_map<Type, TypeMap> & shorthand,
 	std::optional<Type> remove,
-	Record & end) {
+	Record * end) {
 	std::size_t target_row = 0;
 	if (m_components.size()) {
 		// current is non-empty

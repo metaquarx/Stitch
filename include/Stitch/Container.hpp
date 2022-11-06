@@ -32,10 +32,10 @@ struct Container {
 		std::size_t row,
 		const std::unordered_map<Type, TypeMap> & shorthand,
 		std::optional<Type> remove,
-		struct Record & end
+		struct Record * end
 	);
 
-	void erase(std::size_t row, struct Record & end);
+	void erase(std::size_t row, struct Record * end);
 
 	std::unordered_map<Type, Container &> m_forward;
 	std::unordered_map<Type, Container &> m_backward;
