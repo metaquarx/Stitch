@@ -11,10 +11,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
-
-add_executable(Scene "Scene.cpp")
-target_link_libraries(Scene PRIVATE Stitch Catch2::Catch2WithMain)
 include(CTest)
 include(Catch)
 
+add_executable(Scene "Scene.cpp")
+target_link_libraries(Scene PRIVATE Stitch Catch2::Catch2WithMain)
 catch_discover_tests(Scene)
+
+add_executable(View "View.cpp")
+target_link_libraries(View PRIVATE Stitch Catch2::Catch2WithMain)
+catch_discover_tests(View)

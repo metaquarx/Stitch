@@ -6,7 +6,9 @@ add_library(Stitch
 	"Container.cpp"
 	"Record.cpp"
 	"Types.cpp"
-	"Pool.cpp")
+	"Pool.cpp"
+	"View.cpp"
+)
 add_library(Stitch::Stitch ALIAS Stitch)
 
 target_compile_features(Stitch PUBLIC cxx_std_17)

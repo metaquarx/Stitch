@@ -6,6 +6,7 @@
 #include "Stitch/Scene.hpp"
 
 #include "Stitch/Record.hpp"
+#include "Stitch/View.hpp"
 
 #include <bits/utility.h>
 #include <cassert>
@@ -202,5 +203,14 @@ std::optional<std::tuple<C1 &, C2 &, Cs &...>> Scene::get(EntityID id) {
     return std::nullopt;
 }
 
+template <typename... Cs>
+void Scene::each(const id_t<std::function<void(Cs &...)>> & callback) {
+	View view{*this, {std::type_index(typeid(Cs))...}};
 
+	for (auto [container, row] : view) {
+		callback(reinterpret_cast<Cs&>(*(container.m_components.at(m_shorthand.at(std::type_index(typeid(Cs))).at(container.m_id)).get(row)))...);
+	}
 }
+
+
+} // namespace stch

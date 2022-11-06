@@ -8,6 +8,15 @@
 
 namespace stch {
 
+template <class T>
+struct id {
+	using type = T;
+};
+
+template <class T>
+using id_t = typename id<T>::type;
+
+
 class Scene {
 public:
 	Scene();
@@ -30,11 +39,15 @@ public:
 	C * get(EntityID id);
 	template <typename C>
 	const C * get(EntityID id) const;
-
 	template <typename C1, typename C2, typename... Cs>
 	std::optional<std::tuple<C1 &, C2 &, Cs &...>> get(EntityID id);
 
+	template <typename... Cs>
+	void each(const id_t<std::function<void(Cs &...)>> & callback);
+
 private:
+	friend class View;
+
 	std::vector<EntityID> m_recyclable;
 	EntityID m_counter;
 	std::unordered_map<EntityID, arch::Record> m_entities;
