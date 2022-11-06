@@ -5,4 +5,8 @@
 
 #include <cstdint>
 
+namespace stch {
+
 using EntityID = uint64_t;
+
+} // namespace stch
