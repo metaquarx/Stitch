@@ -10,4 +10,5 @@ Stitch is bitset-free - that means that you don't need to specify what component
 ## Docs
 
 [Docs](./docs/Docs.md)
+
 [Tutorial](./docs/Tutorial.md)
